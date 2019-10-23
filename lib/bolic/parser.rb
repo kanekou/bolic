@@ -1,9 +1,10 @@
 class Bolic
   class Parser
-    class ParseError < StandardError;  end
-     
-   # 文字定める 
-    VARIABLES = %w ( ⓧ  ⓨ  ⓘ  ⓙ  )
+    class ParseError < StandardError;
+    end
+
+    # 文字定める
+    VARIABLES = %w(ⓧ ⓨ ⓘ ⓙ)
     NUMBERS = %w( ❶ ❷ ❸ ❹ ❺ ❻ ❼ ❽ ❾ ❿ )
 
     def self.parse(src)
@@ -14,18 +15,34 @@ class Bolic
       @tokens = trim_spaces(src).chars.to_a
       @cur = 0
     end
-    
-    # def run
-    #   @stmts.each do |stmt|
-    #     eval(stmt)
-    #   end
-    # end
 
     def parse
       parse_stmts
     end
-  
+
     private
+
+    def match?(c)
+      if @tokens[@cur] == c
+        @cur += 1
+        true
+      else
+        false
+      end
+    end
+
+    def parse_stmts(*terminators)
+      exprs = []
+      if not terminators.empty?
+        until terminators.include?(@tokens[@cur])
+          exprs << parse_stmt
+        end
+      else
+        while @cur < @tokens.size
+          exprs << parse_stmt
+        end
+      end
+    end
 
     def parse_output
       if match?("♨ ")
@@ -33,10 +50,10 @@ class Bolic
       elsif match?("✒")
         [:num_out, parse_expr]
       else
-        parse_expr
+        parse_while
       end
-    end 
-    
+    end
+
     # 読み込んだすべての式を保存した配列を返す
     def parse_stmts
       stmts = []
@@ -45,25 +62,40 @@ class Bolic
       end
       stmts
     end
-  
+
     def parse_stmt
       parse_output
     end
-    
+
     def parse_expr
       parse_if
     end
-  
-    # TODO
+
+    def parse_while
+      if match?("♻")
+        cond = parse_expr
+        raise ParseError, "☛がありません" unless match?("☛")
+        [:while, cond, parse_stmts]
+      else
+        parse_expr
+      end
+    end
+
     def parse_if
       if match?("🤔")
         cond = parse_expr
-        raise ParseError " " unless match?(" ")
-        thenc = parse_stmts(" " , " ")
-        if match(" ") # thenの処理
-          thenc = parse_stmts(" ") # else節のパース
-          elsec = parse_stmts(" ") # then節のパース
+        raise ParseError "⭕がありません．" unless match?("⭕")
+        thenc = parse_stmts("❌", "✅")
+        if match("❌") # thenの処理
+          elsec = parse_stmts("✅") # else節
+          @cur += 1
+        elsif match?("✅")
+          elsec = nil
         end
+        [:if, cond, thenc, elsec]
+      else
+        parse_additive
+      end
     end
 
     def parse_number
@@ -75,7 +107,7 @@ class Bolic
     end
 
     def parse_additive
-      left = parse_multiple 
+      left = parse_multiple
       if match?("➕")
         [:+, left, parse_expr]
       elsif match?("➖")
@@ -84,7 +116,7 @@ class Bolic
         left
       end
     end
-   
+
     def parse_multiple
       left = parse_variable
       if match?("✖")
@@ -105,7 +137,7 @@ class Bolic
         else
           [:var, c]
         end
-      else 
+      else
         parse_number
       end
     end
@@ -115,21 +147,22 @@ class Bolic
       @cur += 1
       n = NUMBERS.index(c)
       raise ParseError, "数字でないものがきました(#{c})", unless n
-      n
-    end
+                                                n
+                                              end
 
-    # 現在の文字がcかどうか判断
-    def match?(c)
-      if @tokens[@cur] == c
-        @cur += 1
-        true
-      else
-        false
+      # 現在の文字がcかどうか判断
+      def match?(c)
+        if @tokens[@cur] == c
+          @cur += 1
+          true
+        else
+          false
+        end
       end
-    end
 
-    def trim_spaces(str)
-      str.gsub(/\s/, "")
+      def trim_spaces(str)
+        str.gsub(/\s/, "")
+      end
     end
   end
 end
