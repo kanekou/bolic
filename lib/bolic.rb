@@ -77,4 +77,4 @@ class Bolic
   end
 end
 
-p Bolic.run(ARGF.read)
+Bolic.run(ARGF.read)

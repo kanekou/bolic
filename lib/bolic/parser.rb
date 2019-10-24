@@ -1,11 +1,11 @@
 class Bolic
   class Parser
-    class ParseError < StandardError;
-    end
+    class ParseError < StandardError;end
 
     # 文字定める
-    VARIABLES = %w(ⓧ ⓨ ⓘ ⓙ)
-    NUMBERS = %w( ❶ ❷ ❸ ❹ ❺ ❻ ❼ ❽ ❾ ❿ )
+    VARIABLES = %w(ⓧ ⓨ ⓩ ⓘ ⓙ)
+    NUMBERS = %w( ◉ ❶ ❷ ❸ ❹ ❺ ❻ ❼ ❽ ❾ ❿ )
+    # NUMBERS = %w( ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ )
 
     def self.parse(src)
       new(src).parse
@@ -62,7 +62,7 @@ class Bolic
       end
       stmts
     end
-
+♨
     def parse_stmt
       parse_output
     end
@@ -146,23 +146,22 @@ class Bolic
       c = @tokens[@cur]
       @cur += 1
       n = NUMBERS.index(c)
-      raise ParseError, "数字でないものがきました(#{c})", unless n
-                                                n
-                                              end
+      raise ParseError, "数字でないものがきました(#{c})" unless n
+      n
+    end
 
-      # 現在の文字がcかどうか判断
-      def match?(c)
-        if @tokens[@cur] == c
-          @cur += 1
-          true
-        else
-          false
-        end
+    # 現在の文字がcかどうか判断
+    def match?(c)
+      if @tokens[@cur] == c
+        @cur += 1
+        true
+      else
+        false
       end
+    end
 
-      def trim_spaces(str)
-        str.gsub(/\s/, "")
-      end
+    def trim_spaces(str)
+      str.gsub(/\s/, "")
     end
   end
 end
