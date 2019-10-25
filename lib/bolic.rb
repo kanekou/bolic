@@ -40,26 +40,26 @@ class Bolic
         print eval(node[1])
         nil
       when :assign
-        val = eval(node[1])
-        @vars[tree[1]] = val
+        val = eval(node[2])
+        @vars[node[1]] = val
         val
       when :var
         val = @vars[node[1]]
-        raise ProgramError, "初期化されていない変数を参照しました(#{tree[1]})" unless val
+        raise ProgramError, "初期化されていない変数を参照しました(#{node[1]})" unless val
         val
       when :if
-        if eval(tree[1]) != 0
-          eval_stmts(tree[2])
+        if eval(node[1]) != 0
+          eval_stmts(node[2])
         else
-          if tree[3]
-            eval_stmts(tree[3])
+          if node[3]
+            eval_stmts(node[3])
           else
             nil
           end
         end
       when :while
-        while eval(tree[1]) != 0
-          eval_stmts(tree[2])
+        while eval(node[1]) != 0
+          eval_stmts(node[2])
         end
         nil
       else

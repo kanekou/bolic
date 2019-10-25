@@ -3,7 +3,7 @@ class Bolic
     class ParseError < StandardError;end
 
     # 文字定める
-    VARIABLES = %w(ⓧ ⓨ ⓩ ⓘ ⓙ)
+    VARIABLES = %w( ⓧ ⓨ ⓩ ⓘ ⓙ )
     NUMBERS = %w( ◉ ❶ ❷ ❸ ❹ ❺ ❻ ❼ ❽ ❾ ❿ )
     # NUMBERS = %w( ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ )
 
@@ -45,7 +45,7 @@ class Bolic
     end
 
     def parse_output
-      if match?("♨ ")
+      if match?("♨")
         [:char_out, parse_expr]
       elsif match?("✒")
         [:num_out, parse_expr]
@@ -62,7 +62,7 @@ class Bolic
       end
       stmts
     end
-♨
+
     def parse_stmt
       parse_output
     end
@@ -132,7 +132,7 @@ class Bolic
       c = @tokens[@cur]
       if VARIABLES.include?(c)
         @cur += 1
-        if match("☚")
+        if match?("☚")
           [:assign, c, parse_expr]
         else
           [:var, c]
