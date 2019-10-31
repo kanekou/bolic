@@ -22,15 +22,6 @@ class Bolic
 
     private
 
-    def match?(c)
-      if @tokens[@cur] == c
-        @cur += 1
-        true
-      else
-        false
-      end
-    end
-
     def parse_stmts(*terminators)
       exprs = []
       if not terminators.empty?
@@ -42,6 +33,11 @@ class Bolic
           exprs << parse_stmt
         end
       end
+      exprs
+    end
+
+    def parse_stmt
+      parse_output
     end
 
     def parse_output
@@ -54,31 +50,20 @@ class Bolic
       end
     end
 
-    # 読み込んだすべての式を保存した配列を返す
-    def parse_stmts
-      stmts = []
-      while @cur < @tokens.size
-        stmts << parse_stmt
-      end
-      stmts
-    end
-
-    def parse_stmt
-      parse_output
-    end
-
-    def parse_expr
-      parse_if
-    end
-
     def parse_while
       if match?("♻")
         cond = parse_expr
         raise ParseError, "☛がありません" unless match?("☛")
-        [:while, cond, parse_stmts]
+        body = parse_stmts("✅")
+        @cur += 1
+        [:while, cond, body]
       else
         parse_expr
       end
+    end
+
+    def parse_expr
+      parse_if
     end
 
     def parse_if
@@ -86,7 +71,7 @@ class Bolic
         cond = parse_expr
         raise ParseError "⭕がありません．" unless match?("⭕")
         thenc = parse_stmts("❌", "✅")
-        if match("❌") # thenの処理
+        if match?("❌") # thenの処理
           elsec = parse_stmts("✅") # else節
           @cur += 1
         elsif match?("✅")
