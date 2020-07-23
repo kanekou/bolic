@@ -37,7 +37,8 @@ Hello World!
 - *: ✖
 - /: ➗ 
 ### 変数操作
-assign: ☚
+assign: ☚ 
+
 var: (指定しない時)
 
  ## 参考文献
